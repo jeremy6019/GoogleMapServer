@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+var wevSocket;
+//문서로드와 함께 웹소켓서버에 연결한다 
+$(function(){
+    connectServer();
+    
+    //버튼이벤트 
+    $("button").click(function(){
+        send();
+    });
+
+});
+
+//웹소켓버에 접속!! 
+function connectServer(){
+    webSocket = new WebSocket("ws://192.168.100.7:7979");
+    //이벤트 처리 
+    webSocket.onopen=function(){
+        var status = document.getElementById("status");
+        status.innerText = "접속성공";
+    }
+    webSocket.onclose=function(){
+        var status = document.getElementById("status");
+        status.innerText = "접속해제";
+    }
+    webSocket.onerror=function(err){
+        var status = document.getElementById("status");
+        status.innerText = "에러발생"+err;
+    }
+     //서버에서 전송된 데이터받기 
+     webSocket.onmessage = function(e){
+        console.log(e.data);l //서버의 json데이터가 날아와야함 
+    }
+}
+
+//비동기로 전송한다 
+function send(){
+    $.ajax({
+        url:"http://localhost:9999/regist",
+        type:"POST",
+        data:{
+            "lat":$("input[name='lat']").val(),
+            "lng":$("input[name='lng']").val(),
+            "content":$("input[name='content']").val()
+        },
+        success:function(result){
+
+        }
+    });
+}
+</script>
+</head>
+<body>
+
+<form>
+  <div class="container">
+    <h1 id="status">맛집등록</h1>
+    <hr>
+    <input type="text" placeholder="위도입력" name="lat" required>
+    <input type="text" placeholder="경도입력" name="lng" required>
+    <input type="text" placeholder="설명" name="content" required>
+    <hr>
+    <button type="button" class="registerbtn">Register</button>
+  </div>
+  
+</form>
+
+</body>
+</html>
